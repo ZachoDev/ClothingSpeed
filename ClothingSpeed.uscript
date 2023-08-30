@@ -1,0 +1,69 @@
+/*
+	- ClothingSpeed v1.0 -
+	Made By: Zacho (https://unturnedstore.com/users/738)
+*/
+
+// ------------------------------- CLOTHING SPEED CONFIG
+
+ShowAdminSpeed = false; // If this 'true', only admins can see their total speed (just for testing)
+
+clotheslist =
+[
+	item = {"ItemId": 10, "Speed": 0}, // +0% speed
+	item = {"ItemId": 1010, "Speed": 0.10}, // +10 speed
+	item = {"ItemId": 200, "Speed": -0.10}, // -10% speed
+	item = {"ItemId": 334, "Speed": 1.0}, // +100% speed (x2 speed)
+	item = {"ItemId": 253, "Speed": -0.50}, // -50% speed
+	item = {"ItemId": 0, "Speed": 0},
+	AnyTag = {"ItemId": 0, "Speed": 0}
+];
+
+// ------------------------------- CODE
+
+event onInterval(3)
+{
+	if(ShowAdminSpeed == true)
+	{
+		foreach(player in server.players)
+		{
+			if(player.isAdmin == true) player.message("Total speed: "+player.speed);
+		}
+	}
+}
+
+event onLoad()
+{
+	foreach(player in server.players) ClothingUpdate(player);
+}
+
+event onPlayerJoined(player)
+{
+	ClothingUpdate(player);
+}
+
+event onClothingUpdated(player)
+{
+	ClothingUpdate(player);
+}
+
+function ClothingUpdate(player)
+{
+	speed = 1;
+	foreach(clothes in clotheslist)
+	{
+		if(player.clothing.hat.id == clothes["ItemId"]) speed = speed + clothes["Speed"];
+		if(player.clothing.vest.id == clothes["ItemId"]) speed = speed + clothes["Speed"];
+		if(player.clothing.shirt.id == clothes["ItemId"]) speed = speed + clothes["Speed"];
+		if(player.clothing.pants.id == clothes["ItemId"]) speed = speed + clothes["Speed"];
+		if(player.clothing.backpack.id == clothes["ItemId"]) speed = speed + clothes["Speed"];
+		if(player.clothing.mask.id == clothes["ItemId"]) speed = speed + clothes["Speed"];
+		if(player.clothing.glasses.id == clothes["ItemId"]) speed = speed + clothes["Speed"];
+	}
+	player.speed = speed;
+	if(player.speed < 0) player.speed = 0;
+}
+
+event onUnload()
+{
+	foreach(player in server.players) player.speed = 1;
+}
